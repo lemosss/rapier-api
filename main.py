@@ -4,6 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from apps.auth.routes import router as auth_router
 from apps.companies.routes import router as companies_router
 from core.config import settings
+from frontend import router as frontend_router
+from core.database import engine, Base
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Rapier Auth API",
@@ -23,6 +26,7 @@ app.add_middleware(
 # Routers
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(companies_router, prefix="/api/v1", tags=["companies"])
+app.include_router(frontend_router)
 
 
 @app.get("/")

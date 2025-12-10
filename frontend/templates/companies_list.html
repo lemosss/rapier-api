@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Empresas | Rapier{% endblock %}
+
+{% block content %}
+<h2>Minhas Empresas</h2>
+<table class="table table-bordered" id="company-list">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<div id="company-msg" class="mt-3"></div>
+{% endblock %}
+{% block scripts %}
+<script>
+async function fetchCompanies() {
+  let token = localStorage.getItem('access_token');
+  let res = await fetch('/api/v1/companies', {headers: {'Authorization': 'Bearer '+token}});
+  let tbody = document.querySelector('#company-list tbody');
+  if(res.ok) {
+    let companies = await res.json();
+    tbody.innerHTML = '';
+    companies.forEach(c => {
+      tbody.innerHTML += `<tr>
+        <td>${c.id}</td>
+        <td>${c.name}</td>
+        <td><!-- ações futuras --></td>
+      </tr>`;
+    });
+  } else {
+    tbody.innerHTML = '<tr><td colspan="3">Erro ao carregar companies</td></tr>';
+  }
+}
+fetchCompanies();
+</script>
+{% endblock %}

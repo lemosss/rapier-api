@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Usuários | Admin{% endblock %}
+
+{% block content %}
+<h2>Usuários</h2>
+<table class="table table-striped" id="users-list">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Papel</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+{% endblock %}
+{% block scripts %}
+<script>
+async function fetchUsers() {
+  let token = localStorage.getItem('access_token');
+  let res = await fetch('/api/v1/auth/users', {
+    headers: { 'Authorization': 'Bearer '+token }
+  });
+  if(res.ok) {
+    let users = await res.json();
+    let tbody = document.querySelector('#users-list tbody');
+    tbody.innerHTML = '';
+    users.forEach(u => {
+      tbody.innerHTML += `<tr>
+        <td>${u.id}</td>
+        <td>${u.username}</td>
+        <td>${u.email}</td>
+        <td><span class="badge bg-secondary">${u.role}</span></td>
+        <td> <!-- Ações futuras -->
+           <button class="btn btn-sm btn-outline-primary me-1" disabled>Editar</button>
+           <button class="btn btn-sm btn-outline-danger" disabled>Remover</button>
+        </td>
+      </tr>`;
+    });
+  } else {
+    document.querySelector('#users-list tbody').innerHTML = '<tr><td colspan="5">Erro ao carregar usuários</td></tr>';
+  }
+}
+fetchUsers();
+</script>
+{% endblock %}

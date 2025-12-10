@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Entrar | Rapier{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Entrar</h2>
+<form id="login-form">
+  <div class="mb-3">
+    <label for="username" class="form-label">Usuário</label>
+    <input type="text" class="form-control" id="username" name="username" required autofocus>
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Senha</label>
+    <input type="password" class="form-control" id="password" name="password" required>
+  </div>
+  <div id="login-msg" class="mb-2"></div>
+  <button type="submit" class="btn btn-primary">Login</button>
+  <a href="/register" class="btn btn-link">Criar conta</a>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('login-form').onsubmit = async function(e) {
+  e.preventDefault();
+  let msg = document.getElementById('login-msg');
+  msg.innerHTML = '';
+  const data = {
+    username: document.getElementById('username').value,
+    password: document.getElementById('password').value
+  };
+  const res = await fetch('/api/v1/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if(res.ok) {
+    let j = await res.json();
+    msg.innerHTML = '<span class="text-success">Login realizado com sucesso!</span>';
+    // Salvar token ou redirecionar
+    localStorage.setItem('access_token', j.access_token);
+    setTimeout(() => window.location = '/', 600);
+  } else {
+    let err = await res.json();
+    msg.innerHTML = '<span class="text-danger">' + (err.detail||'Erro no login') + '</span>';
+  }
+};
+</script>
+{% endblock %}

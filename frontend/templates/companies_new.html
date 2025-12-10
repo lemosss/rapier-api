@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Nova Empresa | Rapier{% endblock %}
+
+{% block content %}
+<h2>Criar Nova Empresa</h2>
+<form id="company-form">
+  <div class="mb-3">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-control" id="name" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Descrição</label>
+    <input type="text" class="form-control" id="description">
+  </div>
+  <div id="company-msg" class="mb-3"></div>
+  <button class="btn btn-success">Criar empresa</button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('company-form').onsubmit = async function(e){
+  e.preventDefault();
+  let token = localStorage.getItem('access_token');
+  let dataSend = {
+    name: document.getElementById('name').value,
+    description: document.getElementById('description').value
+  };
+  let res = await fetch('/api/v1/companies', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+token
+    },
+    body: JSON.stringify(dataSend)
+  });
+  let msg = document.getElementById('company-msg');
+  if(res.ok) {
+    msg.innerHTML = '<span class="text-success">Empresa criada com sucesso!</span>';
+    document.getElementById('company-form').reset();
+  } else {
+    let err = await res.json();
+    msg.innerHTML = '<span class="text-danger">' + (err.detail || 'Erro ao criar') + '</span>';
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Novo Usuário | Admin{% endblock %}
+
+{% block content %}
+<h2>Novo Usuário</h2>
+<form id="admin-create-form" class="mt-4">
+  <div class="mb-3">
+    <label class="form-label">Username</label>
+    <input type="text" class="form-control" id="username" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">E-mail</label>
+    <input type="email" class="form-control" id="email" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Senha</label>
+    <input type="password" class="form-control" id="password" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-control" id="full_name">
+  </div>
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" value="admin" id="isAdmin">
+    <label class="form-check-label" for="isAdmin">Tornar este usuário administrador</label>
+  </div>
+  <div id="new-msg" class="mb-3"></div>
+  <button class="btn btn-success">Criar</button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('admin-create-form').onsubmit = async function(e){
+  e.preventDefault();
+  let token = localStorage.getItem('access_token');
+  let isAdmin = document.getElementById('isAdmin').checked;
+  let route = isAdmin ? '/api/v1/auth/register/admin' : '/api/v1/auth/register';
+  let dataSend = {
+    email: document.getElementById('email').value,
+    username: document.getElementById('username').value,
+    password: document.getElementById('password').value,
+    full_name: document.getElementById('full_name').value
+  };
+  let res = await fetch(route, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(isAdmin ? {'Authorization': 'Bearer '+token} : {})
+    },
+    body: JSON.stringify(dataSend)
+  });
+  let msg = document.getElementById('new-msg');
+  if(res.ok) {
+    msg.innerHTML = '<span class="text-success">Usuário criado!</span>';
+    document.getElementById('admin-create-form').reset();
+  } else {
+    let err = await res.json();
+    msg.innerHTML = '<span class="text-danger">' + (err.detail || 'Erro') + '</span>';
+  }
+}
+</script>
+{% endblock %}

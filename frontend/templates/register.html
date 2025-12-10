@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Criar Conta | Rapier{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Criar Conta</h2>
+<form id="register-form">
+  <div class="mb-3">
+    <label for="email" class="form-label">E-mail</label>
+    <input type="email" class="form-control" id="email" name="email" required>
+  </div>
+  <div class="mb-3">
+    <label for="username" class="form-label">Usuário</label>
+    <input type="text" class="form-control" id="username" name="username" required>
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Senha</label>
+    <input type="password" class="form-control" id="password" name="password" required>
+  </div>
+  <div class="mb-3">
+    <label for="full_name" class="form-label">Nome completo</label>
+    <input type="text" class="form-control" id="full_name" name="full_name">
+  </div>
+  <div id="register-msg" class="mb-2"></div>
+  <button type="submit" class="btn btn-success">Registrar</button>
+  <a href="/login" class="btn btn-link">Já tenho conta</a>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('register-form').onsubmit = async function(e) {
+  e.preventDefault();
+  let msg = document.getElementById('register-msg');
+  msg.innerHTML = '';
+  const data = {
+    email: document.getElementById('email').value,
+    username: document.getElementById('username').value,
+    password: document.getElementById('password').value,
+    full_name: document.getElementById('full_name').value
+  };
+  const res = await fetch('/api/v1/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if(res.ok) {
+    msg.innerHTML = '<span class="text-success">Cadastro realizado! Efetue o login.</span>';
+    setTimeout(() => window.location = '/login', 1200);
+  } else {
+    let err = await res.json();
+    msg.innerHTML = '<span class="text-danger">' + (err.detail||'Erro no cadastro') + '</span>';
+  }
+};
+</script>
+{% endblock %}
