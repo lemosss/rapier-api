@@ -1,4 +1,4 @@
-# Rapier Auth API
+# Rapier API
 
 Uma API de autenticação, autorização e gerenciamento de usuários com suporte para múltiplos aplicativos (multi-app), criada em FastAPI. Ela centraliza as tarefas de registro, login, atualização e deleção de usuários, com controle de permissões (roles) e endpoints seguros para operações administrativas.
 
